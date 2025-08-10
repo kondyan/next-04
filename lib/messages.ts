@@ -15,14 +15,16 @@ function initDb() {
 
 initDb();
 
-export function addMessage(message: Message) {
-  db.prepare("INSERT INTO messages (text) VALUES (?)").run(message);
+export function addMessage(text: string) {
+  db.prepare<[string]>("INSERT INTO messages (text) VALUES (?)").run(text);
 }
 
 export const getMessages = unstable_cache(
   cache(function getMessages() {
     console.log("Fetching messages from db");
-    return Promise.resolve(db.prepare("SELECT * FROM messages").all());
+    return Promise.resolve(
+      db.prepare<[], Message>("SELECT * FROM messages").all()
+    );
   }),
   ["messages"],
   {
